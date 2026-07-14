@@ -52,6 +52,8 @@ export default function LoginPage() {
                     name="password"
                     type="password"
                     placeholder="Password"
+
+                    
                     className="bg-gray-900 text-white px-4 py-3 rounded-lg outline-none border border-gray-700 focus:border-white"
                     />
                     
