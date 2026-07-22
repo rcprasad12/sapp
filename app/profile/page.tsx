@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+
 
 type UserProfile = {
   id: string;
@@ -83,17 +85,25 @@ export default function ProfilePage() {
               )}
             </div>
           </div>
-          <button
-            onClick={handleFollow}
-            disabled={loading}
-            className={`px-6 py-2 rounded-full font-semibold transition-colors ${
-              profile.isFollowing
-                ? "border border-gray-600 text-white hover:border-red-500 hover:text-red-500"
-                : "bg-white text-black hover:bg-gray-200"
-            }`}
-          >
-            {loading ? "..." : profile.isFollowing ? "Unfollow" : "Follow"}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleFollow}
+              disabled={loading}
+              className={`px-6 py-2 rounded-full font-semibold transition-colors ${
+                profile.isFollowing
+                  ? "border border-gray-600 text-white hover:border-red-500 hover:text-red-500"
+                  : "bg-white text-black hover:bg-gray-200"
+              }`}
+            >
+              {loading ? "..." : profile.isFollowing ? "Unfollow" : "Follow"}
+            </button>
+            <Link
+              href="/profile/edit"
+              className="px-6 py-2 rounded-full font-semibold border border-gray-600 text-white hover:bg-gray-900"
+            >
+              Edit
+            </Link>
+          </div>
         </div>
 
         <div className="flex gap-6 text-sm text-gray-400">
