@@ -4,12 +4,13 @@ import { auth } from "@/auth";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { username: string } }
+  { params }: { params: Promise<{ username: string }> }
 ) {
+  const { username } = await params;
   const session = await auth();
 
   const user = await prisma.user.findUnique({
-    where: { username: params.username },
+    where: { username },
     select: {
       id: true,
       username: true,
@@ -59,5 +60,4 @@ export async function GET(
 
   return NextResponse.json({ ...user, isFollowing });
 }
-
 
