@@ -59,5 +59,13 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  await prisma.notification.create({
+    data: {
+      type: `follow:${currentUser.username}`,
+      userId: targetUser.id,
+    },
+  });
+
   return NextResponse.json({ following: true });
 }
+

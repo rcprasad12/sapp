@@ -4,8 +4,9 @@ import { auth } from "@/auth";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const session = await auth();
 
   if (!session?.user) {
@@ -31,19 +32,34 @@ export async function POST(
     data: {
       content,
       authorId: user.id,
-      postId: params.id,
+      postId: id,
     },
   });
+
+  const post = await prisma.post.findUnique({
+    where: { id },
+  });
+
+  if (post && post.authorId !== user.id) {
+    await prisma.notification.create({
+      data: {
+        type: `comment:${user.username}`,
+        userId: post.authorId,
+      },
+    });
+  }
 
   return NextResponse.json(comment, { status: 201 });
 }
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
+
   const comments = await prisma.comment.findMany({
-    where: { postId: params.id },
+    where: { postId: id },
     orderBy: { createdAt: "asc" },
     include: {
       author: {

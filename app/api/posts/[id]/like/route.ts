@@ -4,8 +4,9 @@ import { auth } from "@/auth";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const session = await auth();
 
   if (!session?.user) {
@@ -24,7 +25,7 @@ export async function POST(
     where: {
       userId_postId: {
         userId: user.id,
-        postId: params.id,
+        postId: id,
       },
     },
   });
@@ -34,7 +35,7 @@ export async function POST(
       where: {
         userId_postId: {
           userId: user.id,
-          postId: params.id,
+          postId: id,
         },
       },
     });
@@ -44,9 +45,23 @@ export async function POST(
   await prisma.like.create({
     data: {
       userId: user.id,
-      postId: params.id,
+      postId: id,
     },
   });
 
+  const post = await prisma.post.findUnique({
+    where: { id },
+  });
+
+  if (post && post.authorId !== user.id) {
+    await prisma.notification.create({
+      data: {
+        type: `like:${user.username}`,
+        userId: post.authorId,
+      },
+    });
+  }
+
   return NextResponse.json({ liked: true });
 }
+
