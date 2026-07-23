@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-
 
 type UserProfile = {
   id: string;
@@ -24,7 +23,7 @@ type UserProfile = {
   }[];
 };
 
-export default function ProfilePage() {
+function ProfileContent() {
   const searchParams = useSearchParams();
   const username = searchParams.get("username");
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -125,6 +124,14 @@ export default function ProfilePage() {
         ))}
       </div>
     </main>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>}>
+      <ProfileContent />
+    </Suspense>
   );
 }
 
